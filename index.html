@@ -1,180 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>APR — Programmer</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-<style>` (short) → content HTML → `<script>` last.
-- **SVG**: `<defs>` (markers) → visual elements immediately.
-- Prefer inline `style="..."` over `<style>` blocks — inputs/controls must look correct mid-stream.
-- Keep `<style>` under ~15 lines. Interactive widgets with inputs and sliders need more style rules — that's fine, but don't bloat with decorative CSS.
-- Gradients, shadows, and blur flash during streaming DOM diffs. Use solid flat fills instead.
+  :root {
+    --bg: #0a0a0a;
+    --bg2: #111111;
+    --bg3: #1a1a1a;
+    --accent: #00ff88;
+    --accent2: #00ccff;
+    --text: #f0f0f0;
+    --muted: #666;
+    --border: #222;
+  }
 
-### Rules
-- No `<!-- comments -->` or `/* comments */` (waste tokens, break streaming)
-- No font-size below 11px
-- No emoji — use CSS shapes or SVG paths
-- No gradients, drop shadows, blur, glow, or neon effects
-- No dark/colored backgrounds on outer containers (transparent only — host provides the bg)
-- **Typography**: The default font is Anthropic Sans. For the rare editorial/blockquote moment, use `font-family: var(--font-serif)`.
-- **Headings**: h1 = 22px, h2 = 18px, h3 = 16px — all `font-weight: 500`. Heading color is pre-set to `var(--color-text-primary)` — don't override it. Body text = 16px, weight 400, `line-height: 1.7`. **Two weights only: 400 regular, 500 bold.** Never use 600 or 700 — they look heavy against the host UI.
-- **Sentence case** always. Never Title Case, never ALL CAPS. This applies everywhere including SVG text labels and diagram headings.
-- **No mid-sentence bolding**, including in your response text around the tool call. Entity names, class names, function names go in `code style` not **bold**. Bold is for headings and labels only.
-- The widget container is `display: block; width: 100%`. Your HTML fills it naturally — no wrapper div needed. Just start with your content directly. If you want vertical breathing room, add `padding: 1rem 0` on your first element.
-- Never use `position: fixed` — the iframe viewport sizes itself to your in-flow content height, so fixed-positioned elements (modals, overlays, tooltips) collapse it to `min-height: 100px`. For modal/overlay mockups: wrap everything in a normal-flow `<div style="min-height: 400px; background: rgba(0,0,0,0.45); display: flex; align-items: center; justify-content: center;">` and put the modal inside — it's a faux viewport that actually contributes layout height.
-- No DOCTYPE, `<html>`, `<head>`, or `<body>` — just content fragments.
-- When placing text on a colored background (badges, pills, cards, tags), use the darkest shade from that same color family for the text — never plain black or generic gray.
-- **Corners**: use `border-radius: var(--border-radius-md)` (or `-lg` for cards) in HTML. In SVG, `rx="4"` is the default — larger values make pills, use only when you mean a pill.
-- **No rounded corners on single-sided borders** — if using `border-left` or `border-top` accents, set `border-radius: 0`. Rounded corners only work with full borders on all sides.
-- **No titles or prose inside the tool output** — see Philosophy above.
-- **Icon sizing**: When using emoji or inline SVG icons, explicitly set `font-size: 16px` for emoji or `width: 16px; height: 16px` for SVG icons. Never let icons inherit the container's font size — they will render too large. For larger decorative icons, use 24px max.
-- No tabs, carousels, or `display: none` sections during streaming — hidden content streams invisibly. Show all content stacked vertically. (Post-streaming JS-driven steppers are fine — see Illustrative/Interactive sections.)
-- No nested scrolling — auto-fit height.
-- Scripts execute after streaming — load libraries via `<script src="https://cdnjs.cloudflare.com/ajax/libs/...">` (UMD globals), then use the global in a plain `<script>` that follows.
-- **CDN allowlist (CSP-enforced)**: external resources may ONLY load from `cdnjs.cloudflare.com`, `esm.sh`, `cdn.jsdelivr.net`, `unpkg.com`. All other origins are blocked by the sandbox — the request silently fails.
+  html { scroll-behavior: smooth; }
 
-### CSS Variables
-**Backgrounds**: `--color-background-primary` (white), `-secondary` (surfaces), `-tertiary` (page bg), `-info`, `-danger`, `-success`, `-warning`
-**Text**: `--color-text-primary` (black), `-secondary` (muted), `-tertiary` (hints), `-info`, `-danger`, `-success`, `-warning`
-**Borders**: `--color-border-tertiary` (0.15α, default), `-secondary` (0.3α, hover), `-primary` (0.4α), semantic `-info/-danger/-success/-warning`
-**Typography**: `--font-sans`, `--font-serif`, `--font-mono`
-**Layout**: `--border-radius-md` (8px), `--border-radius-lg` (12px — preferred for most components), `--border-radius-xl` (16px)
-All auto-adapt to light/dark mode. For custom colors in HTML, use CSS variables.
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
 
-**Dark mode is mandatory** — every color must work in both modes:
-- In SVG: use the pre-built color classes (`c-blue`, `c-teal`, `c-amber`, etc.) for colored nodes — they handle light/dark mode automatically. Never write `<style>` blocks for colors.
-- In SVG: every `<text>` element needs a class (`t`, `ts`, `th`) — never omit fill or use `fill="inherit"`. Inside a `c-{color}` parent, text classes auto-adjust to the ramp.
-- In HTML: always use CSS variables (--color-text-primary, --color-text-secondary) for text. Never hardcode colors like color: #333 — invisible in dark mode.
-- Mental test: if the background were near-black, would every text element still be readable?
+  /* Custom cursor */
+  .cursor {
+    width: 12px; height: 12px;
+    background: var(--accent);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.1s ease;
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1px solid var(--accent);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9998;
+    transition: all 0.15s ease;
+    opacity: 0.5;
+  }
 
-### sendPrompt(text)
-A global function that sends a message to chat as if the user typed it. Use it when the user's next step benefits from Claude thinking. Handle filtering, sorting, toggling, and calculations in JS instead.
+  /* Noise overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
 
-### Links
-`<a href="https://...">` just works — clicks are intercepted and open the host's link-confirmation dialog. Or call `openLink(url)` directly.
+  /* Nav */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    padding: 1.5rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 100;
+    background: linear-gradient(to bottom, rgba(10,10,10,0.95), transparent);
+  }
 
-## When nothing fits
-Pick the closest use case below and adapt. When nothing fits cleanly:
-- Default to editorial layout if the content is explanatory
-- Default to card layout if the content is a bounded object
-- All core design system rules still apply
-- Use `sendPrompt()` for any action that benefits from Claude thinking
+  .logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 1.1rem;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    text-decoration: none;
+  }
 
+  .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+  .nav-links a {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--accent); }
 
-## UI components
+  /* Hero */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 0 3rem;
+    position: relative;
+    overflow: hidden;
+  }
 
-### Layout width
-The widget container is 680px wide. Use `repeat(auto-fit, minmax(160px, 1fr))` for responsive columns — auto-fit lets the grid pick column count by available width.
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,255,136,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,255,136,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    animation: gridShift 20s linear infinite;
+  }
 
-### Aesthetic
-Flat, clean, white surfaces. Minimal 0.5px borders. Generous whitespace. No gradients, no shadows (except functional focus rings). Everything should feel native to claude.ai — like it belongs on the page, not embedded from somewhere else.
+  @keyframes gridShift {
+    0% { background-position: 0 0; }
+    100% { background-position: 60px 60px; }
+  }
 
-### Tokens
-- Borders: always `0.5px solid var(--color-border-tertiary)` (or `-secondary` for emphasis)
-- Corner radius: `var(--border-radius-md)` for most elements, `var(--border-radius-lg)` for cards
-- Cards: white bg (`var(--color-background-primary)`), 0.5px border, radius-lg, padding 1rem 1.25rem
-- Form elements (input, select, textarea, button, range slider) are pre-styled — write bare tags. Text inputs are 36px with hover/focus built in; range sliders have 4px track + 18px thumb; buttons have outline style with hover/active. Only add inline styles to override (e.g., different width).
-- Buttons: pre-styled with transparent bg, 0.5px border-secondary, hover bg-secondary, active scale(0.98). If it triggers sendPrompt, append a ↗ arrow.
-- **Round every displayed number.** JS float math leaks artifacts — `0.1 + 0.2` gives `0.30000000000000004`, `7 * 1.1` gives `7.700000000000001`. Any number that reaches the screen (slider readouts, stat card values, axis labels, data-point labels, tooltips, computed totals) must go through `Math.round()`, `.toFixed(n)`, or `Intl.NumberFormat`. Pick the precision that makes sense for the context — integers for counts, 1–2 decimals for percentages, `toLocaleString()` for currency. For range sliders, also set `step="1"` (or step="0.1" etc.) so the input itself emits round values.
-- Spacing: use rem for vertical rhythm (1rem, 1.5rem, 2rem), px for component-internal gaps (8px, 12px, 16px)
-- Box-shadows: none, except `box-shadow: 0 0 0 Npx` focus rings on inputs
+  .hero-content { position: relative; z-index: 2; max-width: 900px; }
 
-### Metric cards
-For summary numbers (revenue, count, percentage) — surface card with muted 13px label above, 24px/500 number below. `background: var(--color-background-secondary)`, no border, `border-radius: var(--border-radius-md)`, padding 1rem. Use in grids of 2-4 with `gap: 12px`. Distinct from raised cards (which have white bg + border).
+  .hero-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--accent);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.2s forwards;
+  }
 
-### Layout
-- Editorial (explanatory content): no card wrapper, prose flows naturally
-- Card (bounded objects like a contact record, receipt): single raised card wraps the whole thing
-- Don't put tables here — output them as markdown in your response text
+  .hero-name {
+    font-size: clamp(5rem, 12vw, 11rem);
+    font-weight: 800;
+    line-height: 0.9;
+    letter-spacing: -0.03em;
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.4s forwards;
+  }
 
-**Grid overflow:** `grid-template-columns: 1fr` has `min-width: auto` by default — children with large min-content push the column past the container. Use `minmax(0, 1fr)` to clamp.
+  .hero-name span {
+    display: block;
+    background: linear-gradient(135deg, #fff 40%, var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
 
-**Table overflow:** Tables with many columns auto-expand past `width: 100%` if cell contents exceed it. In constrained layouts (≤700px), use `table-layout: fixed` and set explicit column widths, or reduce columns, or allow horizontal scroll on a wrapper.
+  .hero-desc {
+    font-size: 1.15rem;
+    color: var(--muted);
+    max-width: 480px;
+    line-height: 1.7;
+    margin-bottom: 2.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.6s forwards;
+  }
 
-### Mockup presentation
-Contained mockups — mobile screens, chat threads, single cards, modals, small UI components — should sit on a background surface (`var(--color-background-secondary)` container with `border-radius: var(--border-radius-lg)` and padding, or a device frame) so they don't float naked on the widget canvas. Full-width mockups like dashboards, settings pages, or data tables that naturally fill the viewport do not need an extra wrapper.
+  .hero-cta {
+    display: flex;
+    gap: 1rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.8s forwards;
+  }
 
-### 1. Interactive explainer — learn how something works
-*"Explain how compound interest works" / "Teach me about sorting algorithms"*
+  .btn {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 0.9rem 2rem;
+    border-radius: 2px;
+    transition: all 0.2s;
+    cursor: none;
+  }
 
-Use HTML for the interactive controls — sliders, buttons, live state displays, charts. Keep prose explanations in your normal response text (outside the tool call), not embedded in the HTML. No card wrapper. Whitespace is the container.
+  .btn-primary {
+    background: var(--accent);
+    color: #0a0a0a;
+    font-weight: 700;
+  }
+  .btn-primary:hover { background: #fff; transform: translateY(-2px); }
 
-```html
-<div style="display: flex; align-items: center; gap: 12px; margin: 0 0 1.5rem;">
-  <label style="font-size: 14px; color: var(--color-text-secondary);">Years</label>
-  <input type="range" min="1" max="40" value="20" id="years" style="flex: 1;" />
-  <span style="font-size: 14px; font-weight: 500; min-width: 24px;" id="years-out">20</span>
-</div>
+  .btn-outline {
+    border: 1px solid var(--border);
+    color: var(--muted);
+  }
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
 
-<div style="display: flex; align-items: baseline; gap: 8px; margin: 0 0 1.5rem;">
-  <span style="font-size: 14px; color: var(--color-text-secondary);">£1,000 →</span>
-  <span style="font-size: 24px; font-weight: 500;" id="result">£3,870</span>
-</div>
+  .hero-scroll {
+    position: absolute;
+    bottom: 2rem;
+    right: 3rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--muted);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    writing-mode: vertical-rl;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    opacity: 0;
+    animation: fadeIn 1s ease 1.2s forwards;
+  }
 
-<div style="margin: 2rem 0; position: relative; height: 240px;">
-  <canvas id="chart"></canvas>
-</div>
-```
+  .hero-scroll::after {
+    content: '';
+    width: 1px;
+    height: 60px;
+    background: linear-gradient(to bottom, var(--accent), transparent);
+  }
 
-Use `sendPrompt()` to let users ask follow-ups: `sendPrompt('What if I increase the rate to 10%?')`
+  /* Sections */
+  section { padding: 7rem 3rem; }
 
-### 2. Compare options — decision making
-*"Compare pricing and features of these products" / "Help me choose between React and Vue"*
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
 
-Use HTML. Side-by-side card grid for options. Highlight differences with semantic colors. Interactive elements for filtering or weighting.
+  .section-title {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 3rem;
+  }
 
-- Each option in a card. Use badges for key differentiators.
-- Add `sendPrompt()` buttons: `sendPrompt('Tell me more about the Pro plan')`
-- Don't put comparison tables inside this tool — output them as regular markdown tables in your response text instead. The tool is for the visual card grid only.
-- When one option is recommended or "most popular", accent its card with `border: 2px solid var(--color-border-info)` only (2px is deliberate — the only exception to the 0.5px rule, used to accent featured items) — keep the same background and border as the other cards. Add a small badge (e.g. "Most popular") above or inside the card header using `background: var(--color-background-info); color: var(--color-text-info); font-size: 12px; padding: 4px 12px; border-radius: var(--border-radius-md)`.
+  /* About */
+  #about { background: var(--bg2); }
 
-### 3. Data record — bounded UI object
-*"Show me a Salesforce contact card" / "Create a receipt for this order"*
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: center;
+  }
 
-Use HTML. Wrap the entire thing in a single raised card. All content is sans-serif since it's pure UI. Use an avatar/initials circle for people (see example below).
+  .about-text p {
+    font-size: 1.05rem;
+    color: #aaa;
+    line-height: 1.9;
+    margin-bottom: 1.5rem;
+  }
 
-```html
-<div style="background: var(--color-background-primary); border-radius: var(--border-radius-lg); border: 0.5px solid var(--color-border-tertiary); padding: 1rem 1.25rem;">
-  <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
-    <div style="width: 44px; height: 44px; border-radius: 50%; background: var(--color-background-info); display: flex; align-items: center; justify-content: center; font-weight: 500; font-size: 14px; color: var(--color-text-info);">MR</div>
-    <div>
-      <p style="font-weight: 500; font-size: 15px; margin: 0;">Maya Rodriguez</p>
-      <p style="font-size: 13px; color: var(--color-text-secondary); margin: 0;">VP of Engineering</p>
+  .about-text p strong { color: var(--accent); font-weight: 700; }
+
+  .about-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+
+  .stat {
+    background: var(--bg2);
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+    background: var(--accent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .stat:hover::before { opacity: 1; }
+
+  .stat-num {
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--accent);
+    font-family: 'Space Mono', monospace;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  /* Skills */
+  #skills { position: relative; }
+
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+
+  .skill-card {
+    background: var(--bg);
+    padding: 2rem;
+    transition: background 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .skill-card:hover { background: var(--bg3); }
+
+  .skill-icon {
+    font-family: 'Space Mono', monospace;
+    font-size: 1.8rem;
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+
+  .skill-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .skill-desc {
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .skill-bar-wrap {
+    margin-top: 1.2rem;
+    height: 2px;
+    background: var(--border);
+    border-radius: 1px;
+    overflow: hidden;
+  }
+
+  .skill-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 1px;
+    transition: width 1s ease;
+  }
+
+  /* Projects */
+  #projects { background: var(--bg2); }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .project-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s, transform 0.3s;
+  }
+
+  .project-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-4px);
+  }
+
+  .project-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .project-card:hover::before { opacity: 1; }
+
+  .project-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--muted);
+    letter-spacing: 0.2em;
+    margin-bottom: 1rem;
+  }
+
+  .project-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+  }
+
+  .project-desc {
+    font-size: 0.9rem;
+    color: #888;
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+  }
+
+  .project-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+  .tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.75rem;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 1px;
+  }
+
+  /* Contact */
+  #contact { text-align: center; position: relative; overflow: hidden; }
+
+  .contact-glow {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px; height: 400px;
+    background: radial-gradient(ellipse, rgba(0,255,136,0.05), transparent 70%);
+    pointer-events: none;
+  }
+
+  .contact-email {
+    font-size: clamp(1.5rem, 4vw, 3rem);
+    font-weight: 800;
+    color: var(--accent);
+    text-decoration: none;
+    display: block;
+    margin: 2rem 0;
+    letter-spacing: -0.02em;
+    transition: opacity 0.2s;
+  }
+  .contact-email:hover { opacity: 0.7; }
+
+  .contact-links {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+
+  .contact-link {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .contact-link:hover { color: var(--accent); }
+
+  /* Footer */
+  footer {
+    padding: 2rem 3rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  footer p {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+  }
+
+  /* Animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (max-width: 768px) {
+    nav { padding: 1.5rem; }
+    .nav-links { display: none; }
+    #hero, section { padding: 5rem 1.5rem; }
+    .about-grid { grid-template-columns: 1fr; gap: 3rem; }
+    .hero-name { font-size: clamp(3.5rem, 18vw, 6rem); }
+    footer { flex-direction: column; gap: 1rem; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<nav>
+  <a href="#hero" class="logo">APR_</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <p class="hero-tag">// Available for work</p>
+    <h1 class="hero-name"><span>APR</span></h1>
+    <p class="hero-desc">A programmer who turns ideas into reality — writing clean code, building fast software, and solving problems one line at a time.</p>
+    <div class="hero-cta">
+      <a href="#projects" class="btn btn-primary">View Work</a>
+      <a href="#contact" class="btn btn-outline">Get In Touch</a>
     </div>
   </div>
-  <div style="border-top: 0.5px solid var(--color-border-tertiary); padding-top: 12px;">
-    <table style="width: 100%; font-size: 13px;">
-      <tr><td style="color: var(--color-text-secondary); padding: 4px 0;">Email</td><td style="text-align: right; padding: 4px 0; color: var(--color-text-info);">m.rodriguez@acme.com</td></tr>
-      <tr><td style="color: var(--color-text-secondary); padding: 4px 0;">Phone</td><td style="text-align: right; padding: 4px 0;">+1 (415) 555-0172</td></tr>
-    </table>
+  <p class="hero-scroll">Scroll</p>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="about-grid">
+    <div class="about-text reveal">
+      <p class="section-label">// About</p>
+      <h2 class="section-title">Who I Am</h2>
+      <p>I'm <strong>APR</strong>, a programmer passionate about building things that matter. I write code that's clean, efficient, and built to last.</p>
+      <p>Whether it's a web app, a tool, or a full system — I approach every project with curiosity and attention to detail.</p>
+      <a href="#contact" class="btn btn-primary" style="display:inline-block; margin-top:1rem;">Let's Talk</a>
+    </div>
+    <div class="about-stats reveal">
+      <div class="stat">
+        <div class="stat-num">∞</div>
+        <div class="stat-label">Lines of Code</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">01</div>
+        <div class="stat-label">Focus</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">24</div>
+        <div class="stat-label">Hrs Dedication</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">100</div>
+        <div class="stat-label">% Committed</div>
+      </div>
+    </div>
   </div>
-</div>
-```
+</section>
 
+<!-- SKILLS -->
+<section id="skills">
+  <div class="reveal">
+    <p class="section-label">// Skills</p>
+    <h2 class="section-title">What I Do</h2>
+  </div>
+  <div class="skills-grid">
+    <div class="skill-card reveal">
+      <div class="skill-icon">&lt;/&gt;</div>
+      <div class="skill-name">Web Development</div>
+      <div class="skill-desc">Building responsive, fast websites and web applications from front to back.</div>
+      <div class="skill-bar-wrap"><div class="skill-bar" style="width: 90%"></div></div>
+    </div>
+    <div class="skill-card reveal">
+      <div class="skill-icon">{ }</div>
+      <div class="skill-name">Backend Systems</div>
+      <div class="skill-desc">Designing robust APIs, databases, and server-side architecture.</div>
+      <div class="skill-bar-wrap"><div class="skill-bar" style="width: 80%"></div></div>
+    </div>
+    <div class="skill-card reveal">
+      <div class="skill-icon">_fn</div>
+      <div class="skill-name">Problem Solving</div>
+      <div class="skill-desc">Breaking down complex challenges into elegant, efficient solutions.</div>
+      <div class="skill-bar-wrap"><div class="skill-bar" style="width: 95%"></div></div>
+    </div>
+    <div class="skill-card reveal">
+      <div class="skill-icon">git</div>
+      <div class="skill-name">Version Control</div>
+      <div class="skill-desc">Clean commit history, branching strategies, and collaborative workflows.</div>
+      <div class="skill-bar-wrap"><div class="skill-bar" style="width: 85%"></div></div>
+    </div>
+  </div>
+</section>
 
-## Color palette
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="reveal">
+    <p class="section-label">// Projects</p>
+    <h2 class="section-title">My Work</h2>
+  </div>
+  <div class="projects-grid">
+    <div class="project-card reveal">
+      <div class="project-num">01 —</div>
+      <div class="project-title">Project Alpha</div>
+      <div class="project-desc">A full-stack web application built to streamline workflows and automate repetitive tasks.</div>
+      <div class="project-tags">
+        <span class="tag">Node.js</span>
+        <span class="tag">React</span>
+        <span class="tag">MongoDB</span>
+      </div>
+    </div>
+    <div class="project-card reveal">
+      <div class="project-num">02 —</div>
+      <div class="project-title">Project Beta</div>
+      <div class="project-desc">A command-line tool that parses and analyzes data, saving hours of manual work.</div>
+      <div class="project-tags">
+        <span class="tag">Python</span>
+        <span class="tag">CLI</span>
+        <span class="tag">Automation</span>
+      </div>
+    </div>
+    <div class="project-card reveal">
+      <div class="project-num">03 —</div>
+      <div class="project-title">Project Gamma</div>
+      <div class="project-desc">REST API service powering a mobile app with real-time data and authentication.</div>
+      <div class="project-tags">
+        <span class="tag">REST API</span>
+        <span class="tag">JWT</span>
+        <span class="tag">SQL</span>
+      </div>
+    </div>
+  </div>
+</section>
 
-9 color ramps, each with 7 stops from lightest to darkest. 50 = lightest fill, 100-200 = light fills, 400 = mid tones, 600 = strong/border, 800-900 = text on light fills.
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-glow"></div>
+  <div class="reveal" style="position:relative; z-index:2;">
+    <p class="section-label">// Contact</p>
+    <h2 class="section-title">Let's Build Together</h2>
+    <p style="color: var(--muted); margin-bottom: 1rem; font-size: 1rem;">Have a project in mind? Let's talk.</p>
+    <a href="mailto:apr@example.com" class="contact-email">apr@example.com</a>
+    <div class="contact-links">
+      <a href="#" class="contact-link">GitHub</a>
+      <a href="#" class="contact-link">LinkedIn</a>
+      <a href="#" class="contact-link">Twitter</a>
+    </div>
+  </div>
+</section>
 
-| Class | Ramp | 50 (lightest) | 100 | 200 | 400 | 600 | 800 | 900 (darkest) |
-|-------|------|------|-----|-----|-----|-----|-----|------|
-| `c-purple` | Purple | #EEEDFE | #CECBF6 | #AFA9EC | #7F77DD | #534AB7 | #3C3489 | #26215C |
-| `c-teal` | Teal | #E1F5EE | #9FE1CB | #5DCAA5 | #1D9E75 | #0F6E56 | #085041 | #04342C |
-| `c-coral` | Coral | #FAECE7 | #F5C4B3 | #F0997B | #D85A30 | #993C1D | #712B13 | #4A1B0C |
-| `c-pink` | Pink | #FBEAF0 | #F4C0D1 | #ED93B1 | #D4537E | #993556 | #72243E | #4B1528 |
-| `c-gray` | Gray | #F1EFE8 | #D3D1C7 | #B4B2A9 | #888780 | #5F5E5A | #444441 | #2C2C2A |
-| `c-blue` | Blue | #E6F1FB | #B5D4F4 | #85B7EB | #378ADD | #185FA5 | #0C447C | #042C53 |
-| `c-green` | Green | #EAF3DE | #C0DD97 | #97C459 | #639922 | #3B6D11 | #27500A | #173404 |
-| `c-amber` | Amber | #FAEEDA | #FAC775 | #EF9F27 | #BA7517 | #854F0B | #633806 | #412402 |
-| `c-red` | Red | #FCEBEB | #F7C1C1 | #F09595 | #E24B4A | #A32D2D | #791F1F | #501313 |
+<footer>
+  <p>© 2026 APR — Programmer</p>
+  <p>Built with code & caffeine</p>
+</footer>
 
-**How to assign colors**: Color should encode meaning, not sequence. Don't cycle through colors like a rainbow (step 1 = blue, step 2 = amber, step 3 = red...). Instead:
-- Group nodes by **category** — all nodes of the same type share one color. E.g. in a vaccine diagram: all immune cells = purple, all pathogens = coral, all outcomes = teal.
-- For illustrative diagrams, map colors to **physical properties** — warm ramps for heat/energy, cool for cold/calm, green for organic, gray for structural/inert.
-- Use **gray for neutral/structural** nodes (start, end, generic steps).
-- Use **2-3 colors per diagram**, not 6+. More colors = more visual noise. A diagram with gray + purple + teal is cleaner than one using every ramp.
-- **Prefer purple, teal, coral, pink** for general diagram categories. Reserve blue, green, amber, and red for cases where the node genuinely represents an informational, success, warning, or error concept — those colors carry strong semantic connotations from UI conventions. (Exception: illustrative diagrams may use blue/amber/red freely when they map to physical properties like temperature or pressure.)
+<script>
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
 
-**Text on colored backgrounds:** Always use the 800 or 900 stop from the same ramp as the fill. Never use black, gray, or --color-text-primary on colored fills. **When a box has both a title and a subtitle, they must be two different stops** — title darker (800 in light mode, 100 in dark), subtitle lighter (600 in light, 200 in dark). Same stop for both reads flat; the weight difference alone isn't enough. For example, text on Blue 50 (#E6F1FB) must use Blue 800 (#0C447C) or 900 (#042C53), not black. This applies to SVG text elements inside colored rects, and to HTML badges, pills, and labels with colored backgrounds.
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx - 6 + 'px';
+    cursor.style.top = my - 6 + 'px';
+  });
 
-**Light/dark mode quick pick** — use only stops from the table, never off-table hex values:
-- **Light mode**: 50 fill + 600 stroke + **800 title / 600 subtitle**
-- **Dark mode**: 800 fill + 200 stroke + **100 title / 200 subtitle**
-- Apply `c-{ramp}` to a `<g>` wrapping shape+text, or directly to a `<rect>`/`<circle>`/`<ellipse>`. Never to `<path>` — paths don't get ramp fill. For colored connector strokes use inline `stroke="#..."` (any mid-ramp hex works in both modes). Dark mode is automatic for ramp classes. Available: c-gray, c-blue, c-red, c-amber, c-green, c-teal, c-purple, c-coral, c-pink.
+  function animRing() {
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    ring.style.left = rx - 18 + 'px';
+    ring.style.top = ry - 18 + 'px';
+    requestAnimationFrame(animRing);
+  }
+  animRing();
 
-For status/semantic meaning in UI (success, warning, danger) use CSS variables. For categorical coloring in both diagrams and UI, use these ramps.
+  document.querySelectorAll('a, button').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursor.style.transform = 'scale(2)';
+      ring.style.transform = 'scale(1.5)';
+    });
+    el.addEventListener('mouseleave', () => {
+      cursor.style.transform = 'scale(1)';
+      ring.style.transform = 'scale(1)';
+    });
+  });
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) e.target.classList.add('visible');
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
