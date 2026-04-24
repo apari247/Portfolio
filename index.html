@@ -33,11 +33,8 @@
   --blue: #1d4fb5;
   --glow: rgba(61,122,237,0.10);
 }
-
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
 html { scroll-behavior: smooth; }
-
 body {
   font-family: 'Plus Jakarta Sans', sans-serif;
   background: var(--bg);
@@ -46,7 +43,6 @@ body {
   transition: background 0.3s, color 0.3s;
   cursor: default;
 }
-
 /* NAV */
 nav {
   position: fixed; top: 0; left: 0; right: 0;
@@ -60,16 +56,27 @@ nav {
   transition: background 0.3s;
 }
 [data-theme="light"] nav { background: rgba(240,244,248,0.85); }
-
 .logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 800;
-  font-size: 1.4rem;
-  letter-spacing: -0.02em;
-  color: var(--cyan);
+  font-size: 1.1rem;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  text-decoration: none;
 }
-.logo span { color: var(--text); }
-
+.logo-avatar {
+  width: 36px; height: 36px;
+  background: var(--cyan);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem;
+  font-weight: 800;
+  color: #0d0f14;
+  flex-shrink: 0;
+}
 .nav-links { display: flex; gap: 2rem; align-items: center; }
 .nav-links a {
   font-size: 0.88rem;
@@ -80,9 +87,7 @@ nav {
   transition: color 0.2s;
 }
 .nav-links a:hover { color: var(--cyan); }
-
 .nav-right { display: flex; align-items: center; gap: 1rem; }
-
 .btn-nav {
   padding: 0.45rem 1.2rem;
   background: var(--cyan);
@@ -96,29 +101,18 @@ nav {
   transition: opacity 0.2s, transform 0.2s;
 }
 .btn-nav:hover { opacity: 0.85; transform: translateY(-1px); }
-
-.theme-toggle {
+.theme-toggle-btn {
+  width: 38px; height: 38px;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 4px;
-  display: flex;
-  gap: 2px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
   cursor: pointer;
-}
-.theme-btn {
-  padding: 4px 10px;
-  border-radius: 16px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  border: none;
-  background: transparent;
+  transition: border-color 0.2s, background 0.2s;
+  font-size: 1rem;
   color: var(--muted);
-  cursor: pointer;
-  transition: background 0.2s, color 0.2s;
 }
-.theme-btn.active { background: var(--cyan); color: #0d0f14; }
-
+.theme-toggle-btn:hover { border-color: var(--cyan); color: var(--cyan); }
 /* HERO */
 #hero {
   min-height: 100vh;
@@ -130,7 +124,6 @@ nav {
   overflow: hidden;
   text-align: center;
 }
-
 .hero-glow {
   position: absolute;
   width: 700px; height: 700px;
@@ -146,7 +139,6 @@ nav {
   bottom: 0; right: 10%;
   pointer-events: none;
 }
-
 .hero-inner {
   max-width: 1100px;
   margin: 0 auto;
@@ -155,7 +147,6 @@ nav {
   flex-direction: column;
   align-items: center;
 }
-
 .hero-badge {
   display: inline-flex;
   align-items: center;
@@ -177,7 +168,6 @@ nav {
   border-radius: 50%;
   animation: pulse 2s infinite;
 }
-
 h1 {
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: clamp(3.5rem, 10vw, 6.875rem);
@@ -196,7 +186,6 @@ h1 .line2 {
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
-
 .hero-sub {
   font-size: 1.05rem;
   color: var(--muted);
@@ -206,15 +195,12 @@ h1 .line2 {
   opacity: 0;
   animation: fadeUp 0.6s 0.35s forwards;
 }
-
 .hero-ctas {
   display: flex; gap: 16px; flex-wrap: wrap;
   justify-content: center;
   opacity: 0;
   animation: fadeUp 0.6s 0.5s forwards;
 }
-
-/* TERMINAL CARD */
 .btn-primary {
   padding: 0.75rem 2rem;
   background: var(--cyan);
@@ -237,7 +223,6 @@ h1 .line2 {
   transition: border-color 0.2s, color 0.2s, transform 0.2s;
 }
 .btn-outline:hover { border-color: var(--cyan); color: var(--cyan); transform: translateY(-2px); }
-
 /* TERMINAL CARD */
 .terminal {
   background: var(--bg3);
@@ -271,7 +256,6 @@ h1 .line2 {
 .t-yellow { color: #ffbd2e; }
 .t-blue { color: var(--blue); }
 .t-cursor { display: inline-block; width: 8px; height: 14px; background: var(--cyan); animation: blink 1s infinite; vertical-align: middle; }
-
 /* STATS */
 .stats-strip {
   background: var(--bg2);
@@ -294,11 +278,9 @@ h1 .line2 {
   line-height: 1;
 }
 .stat-item p { font-size: 0.85rem; color: var(--muted); margin-top: 6px; }
-
 /* SECTIONS */
 section { padding: 100px 5%; }
 .section-inner { max-width: 1200px; margin: 0 auto; }
-
 .section-label {
   font-family: 'DM Mono', monospace;
   font-size: 0.78rem;
@@ -316,7 +298,6 @@ section { padding: 100px 5%; }
   margin-bottom: 1rem;
 }
 .section-desc { color: var(--muted); font-size: 1rem; max-width: 520px; }
-
 /* ABOUT */
 #about .section-inner {
   display: grid;
@@ -324,9 +305,7 @@ section { padding: 100px 5%; }
   gap: 80px;
   align-items: start;
 }
-.about-right {
-  padding-top: 4rem;
-}
+.about-right { padding-top: 4rem; }
 .about-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 2rem; }
 .about-card {
   background: var(--surface);
@@ -341,7 +320,6 @@ section { padding: 100px 5%; }
 .about-card p { font-size: 0.8rem; color: var(--muted); }
 .about-bio { font-size: 1rem; color: var(--muted); line-height: 1.8; }
 .about-bio strong { color: var(--text); }
-
 /* SKILLS */
 #skills { background: var(--bg2); }
 .skills-grid {
@@ -367,7 +345,6 @@ section { padding: 100px 5%; }
 .skill-bar-fill { height: 100%; background: linear-gradient(90deg, var(--cyan), var(--blue)); border-radius: 3px; width: 0; transition: width 1.2s cubic-bezier(0.4,0,0.2,1); }
 .skill-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
 .skill-tag { font-family: 'DM Mono', monospace; font-size: 0.72rem; padding: 4px 10px; background: var(--bg3); border-radius: 4px; color: var(--muted); }
-
 /* PROJECTS */
 .projects-grid {
   display: grid;
@@ -413,7 +390,6 @@ section { padding: 100px 5%; }
   transition: gap 0.2s;
 }
 .project-link:hover { gap: 8px; }
-
 /* CONTACT */
 #contact { background: var(--bg2); }
 #contact .section-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
@@ -461,7 +437,6 @@ section { padding: 100px 5%; }
 .contact-link-icon { font-size: 1.4rem; }
 .contact-link-info h4 { font-weight: 600; font-size: 0.9rem; }
 .contact-link-info p { font-size: 0.8rem; color: var(--muted); }
-
 /* FOOTER */
 footer {
   text-align: center;
@@ -472,7 +447,6 @@ footer {
   color: var(--muted);
 }
 footer span { color: var(--cyan); }
-
 /* ANIMATIONS */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(20px); }
@@ -486,7 +460,6 @@ footer span { color: var(--cyan); }
   0%, 100% { opacity: 1; }
   50% { opacity: 0; }
 }
-
 /* RESPONSIVE */
 @media (max-width: 900px) {
   #about .section-inner, #contact .section-inner { grid-template-columns: 1fr; gap: 40px; }
@@ -503,25 +476,23 @@ footer span { color: var(--cyan); }
 </style>
 </head>
 <body>
-
 <!-- NAV -->
 <nav>
-  <div class="logo">APR<span>.</span></div>
+  <a href="#hero" class="logo">
+    <div class="logo-avatar">A</div>
+    APR
+  </a>
   <div class="nav-links">
     <a href="#about">About</a>
-    <a href="#skills">Skills</a>
+    <a href="#skills">What I Build</a>
     <a href="#projects">Projects</a>
     <a href="#contact">Contact</a>
   </div>
   <div class="nav-right">
-    <div class="theme-toggle">
-      <button class="theme-btn active" id="darkBtn" onclick="setTheme('dark')">Dark</button>
-      <button class="theme-btn" id="lightBtn" onclick="setTheme('light')">Light</button>
-    </div>
+    <button class="theme-toggle-btn" id="themeBtn" onclick="toggleTheme()" title="Toggle theme">☀️</button>
     <a href="#contact" class="btn-nav">Hire Me</a>
   </div>
 </nav>
-
 <!-- HERO -->
 <section id="hero">
   <div class="hero-glow"></div>
@@ -542,7 +513,6 @@ footer span { color: var(--cyan); }
     </div>
   </div>
 </section>
-
 <!-- STATS -->
 <div class="stats-strip">
   <div class="stats-inner">
@@ -552,7 +522,6 @@ footer span { color: var(--cyan); }
     <div class="stat-item"><h3>∞</h3><p>Learning Mode</p></div>
   </div>
 </div>
-
 <!-- ABOUT -->
 <section id="about">
   <div class="section-inner">
@@ -594,7 +563,6 @@ footer span { color: var(--cyan); }
     </div>
   </div>
 </section>
-
 <!-- SKILLS -->
 <section id="skills">
   <div class="section-inner">
@@ -602,7 +570,6 @@ footer span { color: var(--cyan); }
     <h2 class="section-title">My <span style="color:var(--cyan)">Expertise</span></h2>
     <p class="section-desc">From market algorithms to conversational AI — here's what I work with.</p>
     <div class="skills-grid">
-
       <div class="skill-card">
         <div class="skill-card-icon">📈</div>
         <h3>Trading Bot Dev</h3>
@@ -619,7 +586,6 @@ footer span { color: var(--cyan); }
           <span class="skill-tag">ccxt</span>
         </div>
       </div>
-
       <div class="skill-card">
         <div class="skill-card-icon">💬</div>
         <h3>Chatbot Dev</h3>
@@ -636,7 +602,6 @@ footer span { color: var(--cyan); }
           <span class="skill-tag">NLP</span>
         </div>
       </div>
-
       <div class="skill-card">
         <div class="skill-card-icon">⚙️</div>
         <h3>Software Dev</h3>
@@ -653,7 +618,6 @@ footer span { color: var(--cyan); }
           <span class="skill-tag">APIs</span>
         </div>
       </div>
-
       <div class="skill-card">
         <div class="skill-card-icon">📊</div>
         <h3>Data & Backtesting</h3>
@@ -669,7 +633,6 @@ footer span { color: var(--cyan); }
           <span class="skill-tag">TA-Lib</span>
         </div>
       </div>
-
       <div class="skill-card">
         <div class="skill-card-icon">🌐</div>
         <h3>Web Development</h3>
@@ -685,7 +648,6 @@ footer span { color: var(--cyan); }
           <span class="skill-tag">Vercel</span>
         </div>
       </div>
-
       <div class="skill-card">
         <div class="skill-card-icon">🔧</div>
         <h3>DevOps & Hosting</h3>
@@ -701,11 +663,9 @@ footer span { color: var(--cyan); }
           <span class="skill-tag">PM2</span>
         </div>
       </div>
-
     </div>
   </div>
 </section>
-
 <!-- PROJECTS -->
 <section id="projects">
   <div class="section-inner">
@@ -713,7 +673,6 @@ footer span { color: var(--cyan); }
     <h2 class="section-title">My <span style="color:var(--cyan)">Projects</span></h2>
     <p class="section-desc">Real systems I've built — update these with your actual projects.</p>
     <div class="projects-grid">
-
       <div class="project-card">
         <div class="project-thumb t1">📈</div>
         <div class="project-body">
@@ -730,7 +689,6 @@ footer span { color: var(--cyan); }
           </div>
         </div>
       </div>
-
       <div class="project-card">
         <div class="project-thumb t2">💬</div>
         <div class="project-body">
@@ -747,7 +705,6 @@ footer span { color: var(--cyan); }
           </div>
         </div>
       </div>
-
       <div class="project-card">
         <div class="project-thumb t3">⚙️</div>
         <div class="project-body">
@@ -764,11 +721,9 @@ footer span { color: var(--cyan); }
           </div>
         </div>
       </div>
-
     </div>
   </div>
 </section>
-
 <!-- CONTACT -->
 <section id="contact">
   <div class="section-inner">
@@ -810,20 +765,17 @@ footer span { color: var(--cyan); }
     </div>
   </div>
 </section>
-
 <!-- FOOTER -->
 <footer>
-  Built by <span>APR</span> · Deployed on Vercel · <span>2025</span>
+  Built by <span>APR</span> · Deployed on Vercel · <span>2026</span>
 </footer>
-
 <script>
-// Theme toggle
-function setTheme(t) {
-  document.documentElement.setAttribute('data-theme', t);
-  document.getElementById('darkBtn').classList.toggle('active', t==='dark');
-  document.getElementById('lightBtn').classList.toggle('active', t==='light');
+function toggleTheme() {
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  document.getElementById('themeBtn').textContent = isDark ? '🌙' : '☀️';
 }
-
 // Skill bars on scroll
 const observer = new IntersectionObserver(entries => {
   entries.forEach(entry => {
