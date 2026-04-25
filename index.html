@@ -3,547 +3,368 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>APR — Developer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<title>APR: Trading Bot & Software Developer</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
 <style>
-:root {
-  --bg: #0b0d12;
-  --bg2: #0f1118;
-  --bg3: #141820;
-  --surface: #181d28;
-  --border: rgba(0,220,255,0.10);
-  --text: #dde4f0;
-  --muted: #6b7794;
-  --cyan: #00dcff;
-  --blue: #3d7aed;
-  --glow: rgba(0,220,255,0.12);
-  --nav-h: 70px;
+:root{
+  --bg:#0b0d12;--bg2:#0f1118;--bg3:#141820;--surface:#181d28;
+  --border:rgba(0,220,255,0.10);--text:#dde4f0;--muted:#6b7794;
+  --cyan:#00dcff;--blue:#3d7aed;--glow:rgba(0,220,255,0.12);
+  --nav-h:70px;--transition:0.3s ease;
 }
-[data-theme="light"] {
-  --bg: #edf1f7;
-  --bg2: #e3e9f2;
-  --bg3: #d8e0ec;
-  --surface: #ffffff;
-  --border: rgba(61,122,237,0.15);
-  --text: #0f1525;
-  --muted: #526080;
-  --cyan: #006fa8;
-  --blue: #1d4fb5;
-  --glow: rgba(61,122,237,0.10);
+[data-theme="light"]{
+  --bg:#edf1f7;--bg2:#e3e9f2;--bg3:#d8e0ec;--surface:#ffffff;
+  --border:rgba(61,122,237,0.15);--text:#0f1525;--muted:#526080;
+  --cyan:#006fa8;--blue:#1d4fb5;--glow:rgba(61,122,237,0.10);
 }
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-body {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.6;
-  transition: background 0.3s, color 0.3s;
-  cursor: default;
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;transition:background var(--transition),color var(--transition);}
+
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--cyan);border-radius:2px;}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;height:var(--nav-h);
+  background:rgba(11,13,18,0.88);backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 5%;z-index:100;transition:background var(--transition);
 }
-/* NAV */
-nav {
-  position: fixed; top: 0; left: 0; right: 0;
-  height: var(--nav-h);
-  background: rgba(13,15,20,0.85);
-  backdrop-filter: blur(16px);
-  border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 5%;
-  z-index: 100;
-  transition: background 0.3s;
+[data-theme="light"] nav{background:rgba(237,241,247,0.88);}
+.logo{font-weight:800;font-size:1.4rem;letter-spacing:-0.02em;color:var(--cyan);text-decoration:none;}
+.logo span{color:var(--text);}
+.nav-links{display:flex;gap:2rem;list-style:none;}
+.nav-links a{font-size:0.88rem;font-weight:500;color:var(--muted);text-decoration:none;transition:color 0.2s;}
+.nav-links a:hover{color:var(--cyan);}
+.nav-right{display:flex;align-items:center;gap:1rem;}
+.btn-nav{padding:0.45rem 1.2rem;background:var(--cyan);color:#0b0d12;border:none;border-radius:6px;font-size:0.85rem;font-weight:700;cursor:pointer;text-decoration:none;transition:opacity 0.2s,transform 0.2s;}
+.btn-nav:hover{opacity:0.85;transform:translateY(-1px);}
+.theme-toggle{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:4px;display:flex;gap:2px;cursor:pointer;}
+.theme-btn{padding:4px 10px;border-radius:16px;font-size:0.75rem;font-weight:600;border:none;background:transparent;color:var(--muted);cursor:pointer;transition:background 0.2s,color 0.2s;}
+.theme-btn.active{background:var(--cyan);color:#0b0d12;}
+
+/* ── HERO ── */
+#hero{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  padding:calc(var(--nav-h) + 60px) 5% 80px;
+  position:relative;overflow:hidden;text-align:center;
 }
-[data-theme="light"] nav { background: rgba(240,244,248,0.85); }
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-weight: 800;
-  font-size: 1.1rem;
-  letter-spacing: -0.01em;
-  color: var(--text);
-  text-decoration: none;
+.hero-glow{position:absolute;width:700px;height:700px;background:radial-gradient(circle,rgba(0,220,255,0.06) 0%,transparent 65%);top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;}
+.hero-glow2{position:absolute;width:400px;height:300px;background:radial-gradient(ellipse,rgba(61,122,237,0.05) 0%,transparent 70%);bottom:0;right:8%;pointer-events:none;}
+.hero-inner{max-width:1000px;margin:0 auto;width:100%;display:flex;flex-direction:column;align-items:center;}
+
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:7px 18px;font-size:0.8rem;font-family:'DM Mono',monospace;color:var(--cyan);margin-bottom:2rem;opacity:0;animation:fadeUp 0.6s 0.1s forwards;}
+.badge-dot{width:7px;height:7px;background:var(--cyan);border-radius:50%;box-shadow:0 0 8px var(--cyan);animation:pulse 2s infinite;}
+
+h1{font-size:clamp(2rem,4.5vw,3.6rem);font-weight:800;line-height:1.1;letter-spacing:-0.02em;margin-bottom:1.4rem;opacity:0;animation:fadeUp 0.7s 0.2s forwards;}
+h1 .line1{color:var(--text);display:block;}
+h1 .line2{display:block;background:linear-gradient(90deg,var(--cyan) 0%,var(--blue) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+
+.hero-sub{font-size:1.05rem;color:var(--muted);max-width:540px;margin-bottom:1.75rem;line-height:1.75;opacity:0;animation:fadeUp 0.6s 0.32s forwards;}
+
+.hero-pills{display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;margin-bottom:2rem;opacity:0;animation:fadeUp 0.6s 0.44s forwards;}
+.pill{display:flex;align-items:center;gap:0.5rem;padding:0.45rem 1rem;border-radius:999px;border:1px solid var(--border);background:var(--surface);font-size:0.82rem;font-weight:500;color:var(--muted);transition:all 0.2s;}
+.pill:hover{border-color:var(--cyan);color:var(--cyan);}
+
+.hero-ctas{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;opacity:0;animation:fadeUp 0.6s 0.54s forwards;margin-bottom:3rem;}
+.btn-primary{padding:0.75rem 2rem;background:var(--cyan);color:#0b0d12;border:none;border-radius:8px;font-size:0.95rem;font-weight:700;cursor:pointer;text-decoration:none;box-shadow:0 0 22px rgba(0,220,255,0.28);transition:opacity 0.2s,transform 0.2s,box-shadow 0.2s;}
+.btn-primary:hover{opacity:0.85;transform:translateY(-2px);box-shadow:0 0 34px rgba(0,220,255,0.42);}
+.btn-outline{padding:0.75rem 2rem;background:transparent;color:var(--text);border:1px solid var(--border);border-radius:8px;font-size:0.95rem;font-weight:600;cursor:pointer;text-decoration:none;transition:border-color 0.2s,color 0.2s,transform 0.2s;}
+.btn-outline:hover{border-color:var(--cyan);color:var(--cyan);transform:translateY(-2px);}
+
+/* Terminal */
+.terminal{background:var(--bg3);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,0.5),0 0 40px var(--glow);max-width:680px;width:100%;opacity:0;animation:fadeUp 0.8s 0.64s forwards;}
+.t-bar{background:var(--surface);padding:12px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);}
+.t-dots{display:flex;gap:6px;}
+.t-dot{width:11px;height:11px;border-radius:50%;}
+.t-dot.r{background:#ff5f57;}.t-dot.y{background:#ffbd2e;}.t-dot.g{background:#28c840;}
+.t-title{font-family:'DM Mono',monospace;font-size:0.78rem;color:var(--muted);margin-left:4px;}
+.t-body{padding:20px;font-family:'DM Mono',monospace;font-size:0.82rem;line-height:2;text-align:left;}
+.t-line{display:flex;gap:10px;}
+.t-prompt{color:var(--cyan);}
+.t-cmd{color:var(--text);}
+.t-out{color:var(--muted);padding-left:18px;}
+.t-green{color:#28c840;}.t-yellow{color:#ffbd2e;}.t-blue{color:var(--blue);}
+.t-cursor{display:inline-block;width:8px;height:14px;background:var(--cyan);animation:blink 1s infinite;vertical-align:middle;}
+
+/* ── STATS ── */
+.stats-strip{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:40px 5%;}
+.stats-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:20px;text-align:center;}
+.stat-item h3{font-size:2.5rem;font-weight:800;color:var(--cyan);line-height:1;}
+.stat-item p{font-size:0.85rem;color:var(--muted);margin-top:6px;}
+
+/* ── TECH STRIP ── */
+.tech-strip{background:var(--bg);border-bottom:1px solid var(--border);padding:2rem 5%;text-align:center;}
+.tech-lbl{font-family:'DM Mono',monospace;font-size:0.75rem;color:var(--muted);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:1.5rem;}
+.tech-logos{display:flex;align-items:center;justify-content:center;gap:2.5rem;flex-wrap:wrap;}
+.tech-logo{font-family:'DM Mono',monospace;font-size:0.8rem;color:var(--muted);font-weight:700;letter-spacing:0.06em;opacity:0.4;transition:opacity 0.2s,color 0.2s;}
+.tech-logo:hover{opacity:1;color:var(--cyan);}
+
+/* ── SECTIONS ── */
+section{padding:90px 5%;}
+.s-inner{max-width:1200px;margin:0 auto;}
+.s-label{font-family:'DM Mono',monospace;font-size:0.78rem;color:var(--cyan);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:12px;}
+.s-title{font-size:clamp(2rem,4vw,3rem);font-weight:800;line-height:1.1;letter-spacing:-0.02em;margin-bottom:1rem;}
+.s-desc{color:var(--muted);font-size:1rem;max-width:520px;line-height:1.7;}
+
+/* ── WHAT I BUILD ── */
+#features{background:var(--bg2);}
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:56px;}
+.feat-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px;transition:border-color 0.25s,transform 0.25s,box-shadow 0.25s;position:relative;overflow:hidden;}
+.feat-card::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);opacity:0;transition:opacity 0.3s;}
+.feat-card:hover{border-color:var(--cyan);transform:translateY(-4px);box-shadow:0 12px 40px var(--glow);}
+.feat-card:hover::after{opacity:1;}
+.feat-icon{font-size:2.2rem;margin-bottom:14px;}
+.feat-card h3{font-size:1.1rem;font-weight:700;margin-bottom:8px;}
+.feat-card p{font-size:0.85rem;color:var(--muted);line-height:1.65;}
+
+/* ── ABOUT ── */
+#about{background:var(--bg);}
+#about .s-inner{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start;}
+.about-right{padding-top:3rem;}
+.about-bio{font-size:1rem;color:var(--muted);line-height:1.85;}
+.about-bio strong{color:var(--text);}
+.about-cards{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:2rem;}
+.about-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;transition:border-color 0.2s,transform 0.2s;}
+.about-card:hover{border-color:var(--cyan);transform:translateY(-3px);}
+.about-card-icon{font-size:1.5rem;margin-bottom:8px;}
+.about-card h4{font-size:0.95rem;font-weight:700;margin-bottom:4px;}
+.about-card p{font-size:0.8rem;color:var(--muted);}
+
+/* ── SKILLS ── */
+#skills{background:var(--bg2);}
+.skills-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:56px;}
+.skill-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:26px;transition:border-color 0.25s,transform 0.25s,box-shadow 0.25s;}
+.skill-card:hover{border-color:var(--cyan);transform:translateY(-4px);box-shadow:0 12px 40px var(--glow);}
+.sk-icon{font-size:2rem;margin-bottom:12px;}
+.skill-card h3{font-size:1.05rem;font-weight:700;margin-bottom:8px;}
+.skill-card p{font-size:0.84rem;color:var(--muted);line-height:1.6;margin-bottom:14px;}
+.sk-bar-lbl{display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:0.72rem;color:var(--muted);margin-bottom:6px;}
+.sk-bar-bg{height:5px;background:var(--bg3);border-radius:3px;overflow:hidden;}
+.sk-bar-fill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--blue));border-radius:3px;width:0;transition:width 1.2s cubic-bezier(0.4,0,0.2,1);}
+.sk-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;}
+.sk-tag{font-family:'DM Mono',monospace;font-size:0.7rem;padding:4px 10px;background:var(--bg3);border-radius:4px;color:var(--muted);}
+
+/* ── PROJECTS ── */
+#projects{background:var(--bg);}
+.proj-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:56px;}
+.proj-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:border-color 0.25s,transform 0.25s,box-shadow 0.25s;display:flex;flex-direction:column;}
+.proj-card:hover{border-color:var(--cyan);transform:translateY(-4px);box-shadow:0 12px 40px var(--glow);}
+.proj-thumb{height:130px;display:flex;align-items:center;justify-content:center;font-size:2.8rem;position:relative;overflow:hidden;}
+.proj-thumb.t1{background:linear-gradient(135deg,#081428,#162444);}
+.proj-thumb.t2{background:linear-gradient(135deg,#081818,#082424);}
+.proj-thumb.t3{background:linear-gradient(135deg,#0c0820,#160e3a);}
+.proj-thumb::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,var(--surface));}
+.proj-body{padding:20px;flex:1;display:flex;flex-direction:column;}
+.proj-type{font-family:'DM Mono',monospace;font-size:0.7rem;color:var(--cyan);letter-spacing:0.1em;margin-bottom:8px;}
+.proj-body h3{font-size:1.05rem;font-weight:700;margin-bottom:8px;}
+.proj-body p{font-size:0.84rem;color:var(--muted);line-height:1.6;margin-bottom:14px;flex:1;}
+.proj-footer{display:flex;justify-content:space-between;align-items:center;}
+.proj-stack{display:flex;gap:6px;flex-wrap:wrap;}
+.proj-tech{font-family:'DM Mono',monospace;font-size:0.7rem;padding:3px 9px;background:var(--bg3);border-radius:4px;color:var(--muted);}
+.proj-link{font-size:0.8rem;font-weight:600;color:var(--cyan);text-decoration:none;display:flex;align-items:center;gap:4px;transition:gap 0.2s;}
+.proj-link:hover{gap:8px;}
+
+/* ── CONTACT ── */
+#contact{background:var(--bg2);}
+#contact .s-inner{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start;}
+.contact-right{padding-top:3.5rem;}
+.contact-links-list{display:flex;flex-direction:column;gap:14px;margin-top:2rem;}
+.c-link{display:flex;align-items:center;gap:14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 20px;text-decoration:none;color:var(--text);transition:border-color 0.2s,transform 0.2s;}
+.c-link:hover{border-color:var(--cyan);transform:translateX(4px);}
+.c-link-icon{font-size:1.4rem;}
+.c-link-info h4{font-weight:600;font-size:0.9rem;}
+.c-link-info p{font-size:0.8rem;color:var(--muted);}
+.contact-form{display:flex;flex-direction:column;gap:16px;}
+.form-group{display:flex;flex-direction:column;gap:6px;}
+.form-label{font-size:0.82rem;font-weight:600;color:var(--muted);}
+.form-input,.form-textarea{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 16px;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:0.9rem;outline:none;transition:border-color 0.2s,box-shadow 0.2s;}
+.form-input:focus,.form-textarea:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(0,220,255,0.10);}
+.form-textarea{min-height:130px;resize:vertical;}
+.btn-send{padding:0.85rem 2rem;background:var(--cyan);color:#0b0d12;border:none;border-radius:8px;font-size:0.95rem;font-weight:700;cursor:pointer;align-self:flex-start;box-shadow:0 0 20px rgba(0,220,255,0.25);transition:opacity 0.2s,transform 0.2s,box-shadow 0.2s;}
+.btn-send:hover{opacity:0.85;transform:translateY(-2px);box-shadow:0 0 32px rgba(0,220,255,0.4);}
+
+/* ── FOOTER ── */
+footer{text-align:center;padding:30px;border-top:1px solid var(--border);font-family:'DM Mono',monospace;font-size:0.78rem;color:var(--muted);}
+footer span{color:var(--cyan);}
+
+/* ── REVEAL ── */
+.reveal{opacity:0;transform:translateY(20px);transition:opacity 0.65s ease,transform 0.65s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.6;transform:scale(.85);}}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
+
+/* ── RESPONSIVE ── */
+@media(max-width:960px){
+  #about .s-inner,#contact .s-inner{grid-template-columns:1fr;gap:40px;}
+  .about-right,.contact-right{padding-top:0;}
+  .feat-grid,.skills-grid,.proj-grid{grid-template-columns:1fr 1fr;}
+  .stats-inner{grid-template-columns:repeat(2,1fr);}
+  .nav-links{display:none;}
 }
-.logo-avatar {
-  width: 36px; height: 36px;
-  background: var(--cyan);
-  border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1rem;
-  font-weight: 800;
-  color: #0d0f14;
-  flex-shrink: 0;
-}
-.nav-links { display: flex; gap: 2rem; align-items: center; }
-.nav-links a {
-  font-size: 0.88rem;
-  font-weight: 500;
-  color: var(--muted);
-  text-decoration: none;
-  letter-spacing: 0.04em;
-  transition: color 0.2s;
-}
-.nav-links a:hover { color: var(--cyan); }
-.nav-right { display: flex; align-items: center; gap: 1rem; }
-.btn-nav {
-  padding: 0.45rem 1.2rem;
-  background: var(--cyan);
-  color: #0d0f14;
-  border: none;
-  border-radius: 6px;
-  font-size: 0.85rem;
-  font-weight: 700;
-  cursor: pointer;
-  text-decoration: none;
-  transition: opacity 0.2s, transform 0.2s;
-}
-.btn-nav:hover { opacity: 0.85; transform: translateY(-1px); }
-.theme-toggle-btn {
-  width: 38px; height: 38px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer;
-  transition: border-color 0.2s, background 0.2s;
-  font-size: 1rem;
-  color: var(--muted);
-}
-.theme-toggle-btn:hover { border-color: var(--cyan); color: var(--cyan); }
-/* HERO */
-#hero {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: calc(var(--nav-h) + 60px) 5% 100px;
-  position: relative;
-  overflow: hidden;
-  text-align: center;
-}
-.hero-glow {
-  position: absolute;
-  width: 700px; height: 700px;
-  background: radial-gradient(circle, rgba(0,220,255,0.06) 0%, transparent 65%);
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-}
-.hero-glow2 {
-  position: absolute;
-  width: 500px; height: 300px;
-  background: radial-gradient(ellipse, rgba(61,122,237,0.05) 0%, transparent 70%);
-  bottom: 0; right: 10%;
-  pointer-events: none;
-}
-.hero-inner {
-  max-width: 1100px;
-  margin: 0 auto;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.hero-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 7px 18px;
-  font-size: 0.8rem;
-  font-family: 'DM Mono', monospace;
-  color: var(--cyan);
-  margin-bottom: 2rem;
-  opacity: 0;
-  animation: fadeUp 0.6s 0.1s forwards;
-}
-.badge-dot {
-  width: 7px; height: 7px;
-  background: var(--cyan);
-  border-radius: 50%;
-  animation: pulse 2s infinite;
-}
-h1 {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  h1 {
-  font-size: clamp(2.2rem, 5.5vw, 4.5rem);
-  white-space: nowrap;
-  line-height: 1.05;
-  letter-spacing: -0.03em;
-  margin-bottom: 1.4rem;
-  opacity: 0;
-  animation: fadeUp 0.7s 0.2s forwards;
-}
-h1 .line1 { color: var(--text); display: block; }
-h1 .line2 {
-  display: block;
-  background: linear-gradient(90deg, var(--cyan) 0%, var(--blue) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-.hero-sub {
-  font-size: 1.05rem;
-  color: var(--muted);
-  max-width: 560px;
-  margin-bottom: 2.5rem;
-  line-height: 1.75;
-  opacity: 0;
-  animation: fadeUp 0.6s 0.35s forwards;
-}
-.hero-ctas {
-  display: flex; gap: 16px; flex-wrap: wrap;
-  justify-content: center;
-  opacity: 0;
-  animation: fadeUp 0.6s 0.5s forwards;
-}
-.btn-primary {
-  padding: 0.75rem 2rem;
-  background: var(--cyan);
-  color: #0d0f14;
-  border: none; border-radius: 8px;
-  font-size: 0.95rem; font-weight: 700;
-  cursor: pointer; text-decoration: none;
-  transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
-  box-shadow: 0 0 20px rgba(0,229,255,0.25);
-}
-.btn-primary:hover { opacity: 0.85; transform: translateY(-2px); box-shadow: 0 0 30px rgba(0,229,255,0.4); }
-.btn-outline {
-  padding: 0.75rem 2rem;
-  background: transparent;
-  color: var(--text);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  font-size: 0.95rem; font-weight: 600;
-  cursor: pointer; text-decoration: none;
-  transition: border-color 0.2s, color 0.2s, transform 0.2s;
-}
-.btn-outline:hover { border-color: var(--cyan); color: var(--cyan); transform: translateY(-2px); }
-/* TERMINAL CARD */
-.terminal {
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  overflow: hidden;
-  box-shadow: 0 30px 80px rgba(0,0,0,0.4), 0 0 40px var(--glow);
-  opacity: 0;
-  animation: fadeUp 0.8s 0.3s forwards;
-}
-.terminal-bar {
-  background: var(--surface);
-  padding: 12px 16px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  border-bottom: 1px solid var(--border);
-}
-.t-dots { display: flex; gap: 6px; }
-.t-dot { width: 11px; height: 11px; border-radius: 50%; }
-.t-dot.r { background: #ff5f57; }
-.t-dot.y { background: #ffbd2e; }
-.t-dot.g { background: #28c840; }
-.t-title { font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--muted); margin-left: 4px; }
-.terminal-body { padding: 20px; font-family: 'DM Mono', monospace; font-size: 0.82rem; line-height: 1.9; }
-.t-line { display: flex; gap: 10px; }
-.t-prompt { color: var(--cyan); }
-.t-cmd { color: var(--text); }
-.t-out { color: var(--muted); padding-left: 20px; }
-.t-green { color: #28c840; }
-.t-yellow { color: #ffbd2e; }
-.t-blue { color: var(--blue); }
-.t-cursor { display: inline-block; width: 8px; height: 14px; background: var(--cyan); animation: blink 1s infinite; vertical-align: middle; }
-/* STATS */
-.stats-strip {
-  background: var(--bg2);
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-  padding: 40px 5%;
-}
-.stats-inner {
-  max-width: 1200px; margin: 0 auto;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-  text-align: center;
-}
-.stat-item h3 {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 2.5rem;
-  font-weight: 800;
-  color: var(--cyan);
-  line-height: 1;
-}
-.stat-item p { font-size: 0.85rem; color: var(--muted); margin-top: 6px; }
-/* SECTIONS */
-section { padding: 100px 5%; }
-.section-inner { max-width: 1200px; margin: 0 auto; }
-.section-label {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.78rem;
-  color: var(--cyan);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  margin-bottom: 12px;
-}
-.section-title {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: 800;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-  margin-bottom: 1rem;
-}
-.section-desc { color: var(--muted); font-size: 1rem; max-width: 520px; }
-/* ABOUT */
-#about .section-inner {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 80px;
-  align-items: start;
-}
-.about-right { padding-top: 4rem; }
-.about-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 2rem; }
-.about-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 20px;
-  transition: border-color 0.2s, transform 0.2s;
-}
-.about-card:hover { border-color: var(--cyan); transform: translateY(-3px); }
-.about-card-icon { font-size: 1.5rem; margin-bottom: 8px; }
-.about-card h4 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.95rem; font-weight: 700; margin-bottom: 4px; }
-.about-card p { font-size: 0.8rem; color: var(--muted); }
-.about-bio { font-size: 1rem; color: var(--muted); line-height: 1.8; }
-.about-bio strong { color: var(--text); }
-/* SKILLS */
-#skills { background: var(--bg2); }
-.skills-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-  margin-top: 60px;
-}
-.skill-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 28px;
-  transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
-}
-.skill-card:hover { border-color: var(--cyan); transform: translateY(-4px); box-shadow: 0 12px 40px var(--glow); }
-.skill-card-icon { font-size: 2rem; margin-bottom: 14px; }
-.skill-card h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; }
-.skill-card p { font-size: 0.85rem; color: var(--muted); margin-bottom: 16px; line-height: 1.6; }
-.skill-bar-wrap { margin-top: 8px; }
-.skill-bar-label { display: flex; justify-content: space-between; font-family: 'DM Mono', monospace; font-size: 0.75rem; color: var(--muted); margin-bottom: 6px; }
-.skill-bar-bg { height: 5px; background: var(--bg3); border-radius: 3px; overflow: hidden; }
-.skill-bar-fill { height: 100%; background: linear-gradient(90deg, var(--cyan), var(--blue)); border-radius: 3px; width: 0; transition: width 1.2s cubic-bezier(0.4,0,0.2,1); }
-.skill-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
-.skill-tag { font-family: 'DM Mono', monospace; font-size: 0.72rem; padding: 4px 10px; background: var(--bg3); border-radius: 4px; color: var(--muted); }
-/* PROJECTS */
-.projects-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-  margin-top: 60px;
-}
-.project-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  overflow: hidden;
-  transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
-  display: flex; flex-direction: column;
-}
-.project-card:hover { border-color: var(--cyan); transform: translateY(-4px); box-shadow: 0 12px 40px var(--glow); }
-.project-thumb {
-  height: 140px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 3rem;
-  position: relative;
-  overflow: hidden;
-}
-.project-thumb.t1 { background: linear-gradient(135deg, #0a1628, #1a2a4a); }
-.project-thumb.t2 { background: linear-gradient(135deg, #0d1a1a, #0a2828); }
-.project-thumb.t3 { background: linear-gradient(135deg, #0d0a28, #1a1040); }
-.project-thumb::after {
-  content: '';
-  position: absolute; inset: 0;
-  background: linear-gradient(to bottom, transparent 50%, var(--surface));
-}
-.project-body { padding: 22px; flex: 1; display: flex; flex-direction: column; }
-.project-type { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--cyan); letter-spacing: 0.1em; margin-bottom: 8px; }
-.project-body h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; }
-.project-body p { font-size: 0.85rem; color: var(--muted); line-height: 1.6; margin-bottom: 16px; flex: 1; }
-.project-footer { display: flex; justify-content: space-between; align-items: center; }
-.project-stack { display: flex; gap: 6px; flex-wrap: wrap; }
-.project-tech { font-family: 'DM Mono', monospace; font-size: 0.7rem; padding: 3px 9px; background: var(--bg3); border-radius: 4px; color: var(--muted); }
-.project-link {
-  font-size: 0.8rem; font-weight: 600; color: var(--cyan);
-  text-decoration: none;
-  display: flex; align-items: center; gap: 4px;
-  transition: gap 0.2s;
-}
-.project-link:hover { gap: 8px; }
-/* CONTACT */
-#contact { background: var(--bg2); }
-#contact .section-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
-.contact-right { padding-top: 4rem; }
-.contact-form { display: flex; flex-direction: column; gap: 16px; }
-.form-group { display: flex; flex-direction: column; gap: 6px; }
-.form-label { font-size: 0.82rem; font-weight: 600; color: var(--muted); }
-.form-input, .form-textarea {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 12px 16px;
-  color: var(--text);
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 0.9rem;
-  outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-.form-input:focus, .form-textarea:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(0,229,255,0.1); }
-.form-textarea { min-height: 130px; resize: vertical; }
-.btn-send {
-  padding: 0.85rem 2rem;
-  background: var(--cyan);
-  color: #0d0f14;
-  border: none; border-radius: 8px;
-  font-size: 0.95rem; font-weight: 700;
-  cursor: pointer;
-  transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
-  box-shadow: 0 0 20px rgba(0,229,255,0.25);
-  align-self: flex-start;
-}
-.btn-send:hover { opacity: 0.85; transform: translateY(-2px); box-shadow: 0 0 30px rgba(0,229,255,0.4); }
-.contact-links { display: flex; flex-direction: column; gap: 14px; margin-top: 2rem; }
-.contact-link {
-  display: flex; align-items: center; gap: 14px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 16px 20px;
-  text-decoration: none;
-  color: var(--text);
-  transition: border-color 0.2s, transform 0.2s;
-}
-.contact-link:hover { border-color: var(--cyan); transform: translateX(4px); }
-.contact-link-icon { font-size: 1.4rem; }
-.contact-link-info h4 { font-weight: 600; font-size: 0.9rem; }
-.contact-link-info p { font-size: 0.8rem; color: var(--muted); }
-/* FOOTER */
-footer {
-  text-align: center;
-  padding: 32px;
-  border-top: 1px solid var(--border);
-  font-family: 'DM Mono', monospace;
-  font-size: 0.78rem;
-  color: var(--muted);
-}
-footer span { color: var(--cyan); }
-/* ANIMATIONS */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.6; transform: scale(0.85); }
-}
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
-}
-/* RESPONSIVE */
-@media (max-width: 900px) {
-  #about .section-inner, #contact .section-inner { grid-template-columns: 1fr; gap: 40px; }
-  .about-right, .contact-right { padding-top: 0; }
-  .skills-grid, .projects-grid { grid-template-columns: 1fr 1fr; }
-  .stats-inner { grid-template-columns: repeat(2, 1fr); }
-  .nav-links { display: none; }
-}
-@media (max-width: 600px) {
-  .skills-grid, .projects-grid { grid-template-columns: 1fr; }
-  .stats-inner { grid-template-columns: repeat(2, 1fr); }
-  h1 { font-size: clamp(2.6rem, 9vw, 3.5rem); }
+@media(max-width:600px){
+  .feat-grid,.skills-grid,.proj-grid{grid-template-columns:1fr;}
+  h1{font-size:clamp(2.6rem,9vw,3.5rem);}
+  .stats-inner{grid-template-columns:repeat(2,1fr);}
 }
 </style>
 </head>
 <body>
+
 <!-- NAV -->
 <nav>
-  <a href="#hero" class="logo">
-    <div class="logo-avatar">A</div>
-    APR
-  </a>
-  <div class="nav-links">
-    <a href="#about">About</a>
-    <a href="#skills">What I Build</a>
-    <a href="#projects">Projects</a>
-    <a href="#contact">Contact</a>
-  </div>
+  <a href="#hero" class="logo">APR<span>.</span></a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
   <div class="nav-right">
-    <button class="theme-toggle-btn" id="themeBtn" onclick="toggleTheme()" title="Toggle theme">☀️</button>
+    <div class="theme-toggle">
+      <button class="theme-btn active" id="darkBtn" onclick="setTheme('dark')">Dark</button>
+      <button class="theme-btn" id="lightBtn" onclick="setTheme('light')">Light</button>
+    </div>
     <a href="#contact" class="btn-nav">Hire Me</a>
   </div>
 </nav>
+
 <!-- HERO -->
 <section id="hero">
   <div class="hero-glow"></div>
   <div class="hero-glow2"></div>
   <div class="hero-inner">
+
     <div class="hero-badge">
       <span class="badge-dot"></span>
       Available for freelance &amp; projects
     </div>
+
     <h1>
       <span class="line1">Trading Bots, Chatbots</span>
       <span class="line2">&amp; Software Built to Perform</span>
     </h1>
-    <p class="hero-sub">Hi, I'm <strong style="color:var(--text)">APR</strong> — a developer specializing in automated trading systems, intelligent chatbots, and custom software solutions. I build tools that work while you sleep.</p>
+
+    <p class="hero-sub">
+      Hi, I'm <strong style="color:var(--text)">APR</strong>, a developer specializing in automated trading systems, intelligent chatbots, and custom software solutions. I build tools that work while you sleep.
+    </p>
+
+    <div class="hero-pills">
+      <div class="pill">📈 Trading Bots</div>
+      <div class="pill">🤖 Chatbots</div>
+      <div class="pill">💻 Software Dev</div>
+    </div>
+
     <div class="hero-ctas">
       <a href="#projects" class="btn-primary">View My Work →</a>
       <a href="#contact" class="btn-outline">Get In Touch</a>
     </div>
+
+    <div class="terminal">
+      <div class="t-bar">
+        <div class="t-dots">
+          <div class="t-dot r"></div>
+          <div class="t-dot y"></div>
+          <div class="t-dot g"></div>
+        </div>
+        <span class="t-title">// apr: bot.dashboard</span>
+      </div>
+      <div class="t-body">
+        <div class="t-line"><span class="t-prompt">$</span><span class="t-cmd"> python trading_bot.py --live</span></div>
+        <div class="t-out t-green">✓ Connected to Binance API</div>
+        <div class="t-out t-green">✓ Strategy loaded: RSI + MACD scalping</div>
+        <div class="t-out t-yellow">⚡ Scanning markets 24/7...</div>
+        <div class="t-line" style="margin-top:6px;"><span class="t-prompt">$</span><span class="t-cmd"> python chatbot.py --deploy telegram</span></div>
+        <div class="t-out t-green">✓ Telegram bot online</div>
+        <div class="t-out t-blue">→ Handling 142 active conversations</div>
+        <div class="t-out"><span class="t-cursor"></span></div>
+      </div>
+    </div>
+
   </div>
 </section>
+
 <!-- STATS -->
 <div class="stats-strip">
   <div class="stats-inner">
-    <div class="stat-item"><h3>3+</h3><p>Years Coding</p></div>
+    <div class="stat-item"><h3>3</h3><p>Core Specialties</p></div>
     <div class="stat-item"><h3>10+</h3><p>Bots Built</p></div>
     <div class="stat-item"><h3>24/7</h3><p>Bot Uptime</p></div>
-    <div class="stat-item"><h3>∞</h3><p>Learning Mode</p></div>
+    <div class="stat-item"><h3>∞</h3><p>Always Learning</p></div>
   </div>
 </div>
+
+<!-- TECH STRIP -->
+<div class="tech-strip">
+  <p class="tech-lbl">Technologies I Work With</p>
+  <div class="tech-logos">
+    <span class="tech-logo">Python</span>
+    <span class="tech-logo">MQL5</span>
+    <span class="tech-logo">Binance API</span>
+    <span class="tech-logo">Node.js</span>
+    <span class="tech-logo">Telegram API</span>
+    <span class="tech-logo">TradingView</span>
+    <span class="tech-logo">ccxt</span>
+    <span class="tech-logo">OpenAI API</span>
+  </div>
+</div>
+
+<!-- WHAT I BUILD -->
+<section id="features">
+  <div class="s-inner">
+    <div class="reveal">
+      <div class="s-label">// what i build</div>
+      <h2 class="s-title">Three Specialties. <span style="color:var(--cyan)">One Developer.</span></h2>
+      <p class="s-desc">From automated markets to intelligent conversations to custom software. I build tools that deliver real results.</p>
+    </div>
+    <div class="feat-grid">
+      <div class="feat-card reveal">
+        <div class="feat-icon">📈</div>
+        <h3>Trading Bots</h3>
+        <p>Automated trading systems for crypto and forex markets. Algorithmic strategies, backtesting, real-time execution and risk management, built to run 24/7 without supervision.</p>
+      </div>
+      <div class="feat-card reveal">
+        <div class="feat-icon">🤖</div>
+        <h3>Chatbots</h3>
+        <p>Intelligent conversational bots for Telegram, WhatsApp, Discord and the web. Customer support, automation workflows, and AI-powered responses that never sleep.</p>
+      </div>
+      <div class="feat-card reveal">
+        <div class="feat-icon">💻</div>
+        <h3>Software Development</h3>
+        <p>Custom software from web apps to desktop tools. Clean, maintainable code focused on performance, reliability, and solving real-world problems efficiently.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ABOUT -->
 <section id="about">
-  <div class="section-inner">
-    <div class="about-left">
-      <div class="section-label">// about</div>
-      <h2 class="section-title">Who is<br/><span style="color:var(--cyan)">APR?</span></h2>
+  <div class="s-inner">
+    <div class="reveal">
+      <div class="s-label">// about</div>
+      <h2 class="s-title">Who is <span style="color:var(--cyan)">APR?</span></h2>
       <p class="about-bio">
-        I'm <strong>APR</strong> — a developer specializing in intelligent automation. I build <strong>algorithmic trading bots</strong> that operate in crypto and forex markets, <strong>AI-powered chatbots</strong> that handle real conversations, and <strong>custom software</strong> that solves real problems.
+        I'm <strong>APR</strong>, a developer who specializes in intelligent automation. I build <strong>algorithmic trading bots</strong> that operate around the clock in crypto and forex markets, <strong>AI-powered chatbots</strong> that handle real conversations at scale, and <strong>custom software</strong> that solves real problems with clean, efficient code.
         <br/><br/>
-        My focus is on systems that work autonomously — code that runs while you sleep.
+        My philosophy is simple: build systems that work autonomously. Code that runs while you sleep, so you can focus on what matters.
       </p>
-      <div class="hero-ctas" style="margin-top:2rem">
+      <div style="margin-top:2rem;">
         <a href="#contact" class="btn-primary">Let's Build Together</a>
       </div>
     </div>
     <div class="about-right">
-      <div class="about-cards">
+      <div class="about-cards reveal">
         <div class="about-card">
           <div class="about-card-icon">📈</div>
           <h4>Algo Trading</h4>
-          <p>Automated strategies for crypto & forex</p>
+          <p>Automated strategies for crypto &amp; forex</p>
         </div>
         <div class="about-card">
           <div class="about-card-icon">🤖</div>
@@ -553,201 +374,192 @@ footer span { color: var(--cyan); }
         <div class="about-card">
           <div class="about-card-icon">⚙️</div>
           <h4>Automation</h4>
-          <p>Scripts & tools to eliminate repetition</p>
+          <p>Scripts &amp; tools that eliminate repetition</p>
         </div>
         <div class="about-card">
           <div class="about-card-icon">🔒</div>
           <h4>Reliable Systems</h4>
-          <p>Built for uptime, stability & scale</p>
+          <p>Built for uptime, stability &amp; scale</p>
         </div>
       </div>
     </div>
   </div>
 </section>
+
 <!-- SKILLS -->
 <section id="skills">
-  <div class="section-inner">
-    <div class="section-label">// skills</div>
-    <h2 class="section-title">My <span style="color:var(--cyan)">Expertise</span></h2>
-    <p class="section-desc">From market algorithms to conversational AI — here's what I work with.</p>
+  <div class="s-inner">
+    <div class="reveal">
+      <div class="s-label">// skills</div>
+      <h2 class="s-title">My <span style="color:var(--cyan)">Expertise</span></h2>
+      <p class="s-desc">From market algorithms to conversational AI. Here's what I work with.</p>
+    </div>
     <div class="skills-grid">
-      <div class="skill-card">
-        <div class="skill-card-icon">📈</div>
+
+      <div class="skill-card reveal">
+        <div class="sk-icon">📈</div>
         <h3>Trading Bot Dev</h3>
-        <p>Designing and deploying automated trading strategies across crypto and forex markets with risk management built in.</p>
-        <div class="skill-bar-wrap">
-          <div class="skill-bar-label"><span>Proficiency</span><span>85%</span></div>
-          <div class="skill-bar-bg"><div class="skill-bar-fill" data-w="85"></div></div>
-        </div>
-        <div class="skill-tags">
-          <span class="skill-tag">Python</span>
-          <span class="skill-tag">Binance API</span>
-          <span class="skill-tag">MT4/MT5</span>
-          <span class="skill-tag">MQL5</span>
-          <span class="skill-tag">ccxt</span>
+        <p>Designing and deploying automated trading strategies for crypto and forex markets with full risk management.</p>
+        <div class="sk-bar-lbl"><span>Proficiency</span><span>90%</span></div>
+        <div class="sk-bar-bg"><div class="sk-bar-fill" data-w="90"></div></div>
+        <div class="sk-tags">
+          <span class="sk-tag">Python</span><span class="sk-tag">Binance API</span>
+          <span class="sk-tag">MT4/MT5</span><span class="sk-tag">MQL5</span><span class="sk-tag">ccxt</span>
         </div>
       </div>
-      <div class="skill-card">
-        <div class="skill-card-icon">💬</div>
+
+      <div class="skill-card reveal">
+        <div class="sk-icon">💬</div>
         <h3>Chatbot Dev</h3>
         <p>Building conversational AI agents powered by NLP and LLMs, deployable on Telegram, WhatsApp, websites and more.</p>
-        <div class="skill-bar-wrap">
-          <div class="skill-bar-label"><span>Proficiency</span><span>80%</span></div>
-          <div class="skill-bar-bg"><div class="skill-bar-fill" data-w="80"></div></div>
-        </div>
-        <div class="skill-tags">
-          <span class="skill-tag">Python</span>
-          <span class="skill-tag">OpenAI API</span>
-          <span class="skill-tag">Telegram Bot</span>
-          <span class="skill-tag">LangChain</span>
-          <span class="skill-tag">NLP</span>
+        <div class="sk-bar-lbl"><span>Proficiency</span><span>88%</span></div>
+        <div class="sk-bar-bg"><div class="sk-bar-fill" data-w="88"></div></div>
+        <div class="sk-tags">
+          <span class="sk-tag">Python</span><span class="sk-tag">OpenAI API</span>
+          <span class="sk-tag">Telegram Bot</span><span class="sk-tag">LangChain</span><span class="sk-tag">NLP</span>
         </div>
       </div>
-      <div class="skill-card">
-        <div class="skill-card-icon">⚙️</div>
+
+      <div class="skill-card reveal">
+        <div class="sk-icon">⚙️</div>
         <h3>Software Dev</h3>
-        <p>Creating desktop apps, web backends and automation tools that solve real-world problems efficiently.</p>
-        <div class="skill-bar-wrap">
-          <div class="skill-bar-label"><span>Proficiency</span><span>78%</span></div>
-          <div class="skill-bar-bg"><div class="skill-bar-fill" data-w="78"></div></div>
-        </div>
-        <div class="skill-tags">
-          <span class="skill-tag">Python</span>
-          <span class="skill-tag">JavaScript</span>
-          <span class="skill-tag">Node.js</span>
-          <span class="skill-tag">Flask</span>
-          <span class="skill-tag">APIs</span>
+        <p>Creating desktop apps, web backends and automation tools that solve real-world problems efficiently and cleanly.</p>
+        <div class="sk-bar-lbl"><span>Proficiency</span><span>83%</span></div>
+        <div class="sk-bar-bg"><div class="sk-bar-fill" data-w="83"></div></div>
+        <div class="sk-tags">
+          <span class="sk-tag">Python</span><span class="sk-tag">JavaScript</span>
+          <span class="sk-tag">Node.js</span><span class="sk-tag">Flask</span><span class="sk-tag">APIs</span>
         </div>
       </div>
-      <div class="skill-card">
-        <div class="skill-card-icon">📊</div>
-        <h3>Data & Backtesting</h3>
-        <p>Analyzing market data and backtesting strategies to validate performance before going live.</p>
-        <div class="skill-bar-wrap">
-          <div class="skill-bar-label"><span>Proficiency</span><span>75%</span></div>
-          <div class="skill-bar-bg"><div class="skill-bar-fill" data-w="75"></div></div>
-        </div>
-        <div class="skill-tags">
-          <span class="skill-tag">Pandas</span>
-          <span class="skill-tag">NumPy</span>
-          <span class="skill-tag">Backtrader</span>
-          <span class="skill-tag">TA-Lib</span>
+
+      <div class="skill-card reveal">
+        <div class="sk-icon">📊</div>
+        <h3>Data &amp; Backtesting</h3>
+        <p>Analyzing market data and backtesting trading strategies to validate performance before going live.</p>
+        <div class="sk-bar-lbl"><span>Proficiency</span><span>85%</span></div>
+        <div class="sk-bar-bg"><div class="sk-bar-fill" data-w="85"></div></div>
+        <div class="sk-tags">
+          <span class="sk-tag">Pandas</span><span class="sk-tag">NumPy</span>
+          <span class="sk-tag">Backtrader</span><span class="sk-tag">TA-Lib</span>
         </div>
       </div>
-      <div class="skill-card">
-        <div class="skill-card-icon">🌐</div>
+
+      <div class="skill-card reveal">
+        <div class="sk-icon">🌐</div>
         <h3>Web Development</h3>
-        <p>Building clean, functional websites and web apps — dashboards, portfolios, landing pages.</p>
-        <div class="skill-bar-wrap">
-          <div class="skill-bar-label"><span>Proficiency</span><span>70%</span></div>
-          <div class="skill-bar-bg"><div class="skill-bar-fill" data-w="70"></div></div>
-        </div>
-        <div class="skill-tags">
-          <span class="skill-tag">HTML/CSS</span>
-          <span class="skill-tag">JavaScript</span>
-          <span class="skill-tag">React</span>
-          <span class="skill-tag">Vercel</span>
+        <p>Building clean, functional websites and web apps, dashboards, portfolios, and landing pages.</p>
+        <div class="sk-bar-lbl"><span>Proficiency</span><span>75%</span></div>
+        <div class="sk-bar-bg"><div class="sk-bar-fill" data-w="75"></div></div>
+        <div class="sk-tags">
+          <span class="sk-tag">HTML/CSS</span><span class="sk-tag">JavaScript</span>
+          <span class="sk-tag">React</span><span class="sk-tag">Vercel</span>
         </div>
       </div>
-      <div class="skill-card">
-        <div class="skill-card-icon">🔧</div>
-        <h3>DevOps & Hosting</h3>
+
+      <div class="skill-card reveal">
+        <div class="sk-icon">🔧</div>
+        <h3>DevOps &amp; Hosting</h3>
         <p>Deploying bots and apps to run 24/7 on cloud servers with monitoring and auto-restart.</p>
-        <div class="skill-bar-wrap">
-          <div class="skill-bar-label"><span>Proficiency</span><span>65%</span></div>
-          <div class="skill-bar-bg"><div class="skill-bar-fill" data-w="65"></div></div>
-        </div>
-        <div class="skill-tags">
-          <span class="skill-tag">Linux VPS</span>
-          <span class="skill-tag">GitHub</span>
-          <span class="skill-tag">Docker</span>
-          <span class="skill-tag">PM2</span>
+        <div class="sk-bar-lbl"><span>Proficiency</span><span>70%</span></div>
+        <div class="sk-bar-bg"><div class="sk-bar-fill" data-w="70"></div></div>
+        <div class="sk-tags">
+          <span class="sk-tag">Linux VPS</span><span class="sk-tag">GitHub</span>
+          <span class="sk-tag">Docker</span><span class="sk-tag">PM2</span>
         </div>
       </div>
+
     </div>
   </div>
 </section>
+
 <!-- PROJECTS -->
 <section id="projects">
-  <div class="section-inner">
-    <div class="section-label">// projects</div>
-    <h2 class="section-title">My <span style="color:var(--cyan)">Projects</span></h2>
-    <p class="section-desc">Real systems I've built — update these with your actual projects.</p>
-    <div class="projects-grid">
-      <div class="project-card">
-        <div class="project-thumb t1">📈</div>
-        <div class="project-body">
-          <div class="project-type">TRADING BOT</div>
+  <div class="s-inner">
+    <div class="reveal">
+      <div class="s-label">// projects</div>
+      <h2 class="s-title">My <span style="color:var(--cyan)">Projects</span></h2>
+      <p class="s-desc">Real systems I've built, each solving a real problem with clean, reliable code.</p>
+    </div>
+    <div class="proj-grid">
+
+      <div class="proj-card reveal">
+        <div class="proj-thumb t1">📈</div>
+        <div class="proj-body">
+          <div class="proj-type">TRADING BOT</div>
           <h3>Crypto Scalping Bot</h3>
-          <p>An automated bot using RSI + MACD signals to scalp BTC/USDT on Binance. Includes risk management, take-profit and stop-loss logic.</p>
-          <div class="project-footer">
-            <div class="project-stack">
-              <span class="project-tech">Python</span>
-              <span class="project-tech">ccxt</span>
-              <span class="project-tech">Binance</span>
+          <p>Automated bot using RSI + MACD signals to scalp BTC/USDT on Binance. Includes risk management, take-profit and stop-loss logic running 24/7.</p>
+          <div class="proj-footer">
+            <div class="proj-stack">
+              <span class="proj-tech">Python</span>
+              <span class="proj-tech">ccxt</span>
+              <span class="proj-tech">Binance</span>
             </div>
-            <a href="#" class="project-link">View →</a>
+            <a href="#" class="proj-link">View →</a>
           </div>
         </div>
       </div>
-      <div class="project-card">
-        <div class="project-thumb t2">💬</div>
-        <div class="project-body">
-          <div class="project-type">CHATBOT</div>
+
+      <div class="proj-card reveal">
+        <div class="proj-thumb t2">💬</div>
+        <div class="proj-body">
+          <div class="proj-type">CHATBOT</div>
           <h3>Telegram AI Assistant</h3>
-          <p>A GPT-powered Telegram bot that answers questions, handles commands and can be customised with a knowledge base for any niche.</p>
-          <div class="project-footer">
-            <div class="project-stack">
-              <span class="project-tech">Python</span>
-              <span class="project-tech">OpenAI</span>
-              <span class="project-tech">Telegram</span>
+          <p>GPT-powered Telegram bot that answers questions, handles commands and can be customised with a knowledge base for any niche or business.</p>
+          <div class="proj-footer">
+            <div class="proj-stack">
+              <span class="proj-tech">Python</span>
+              <span class="proj-tech">OpenAI</span>
+              <span class="proj-tech">Telegram</span>
             </div>
-            <a href="#" class="project-link">View →</a>
+            <a href="#" class="proj-link">View →</a>
           </div>
         </div>
       </div>
-      <div class="project-card">
-        <div class="project-thumb t3">⚙️</div>
-        <div class="project-body">
-          <div class="project-type">SOFTWARE</div>
-          <h3>Forex EA — MT5</h3>
-          <p>An Expert Advisor for MetaTrader 5 implementing a trend-following strategy with dynamic lot sizing and drawdown protection.</p>
-          <div class="project-footer">
-            <div class="project-stack">
-              <span class="project-tech">MQL5</span>
-              <span class="project-tech">MT5</span>
-              <span class="project-tech">Forex</span>
+
+      <div class="proj-card reveal">
+        <div class="proj-thumb t3">⚙️</div>
+        <div class="proj-body">
+          <div class="proj-type">SOFTWARE</div>
+          <h3>Forex EA MT5</h3>
+          <p>Expert Advisor for MetaTrader 5 implementing a trend-following strategy with dynamic lot sizing and drawdown protection built in.</p>
+          <div class="proj-footer">
+            <div class="proj-stack">
+              <span class="proj-tech">MQL5</span>
+              <span class="proj-tech">MT5</span>
+              <span class="proj-tech">Forex</span>
             </div>
-            <a href="#" class="project-link">View →</a>
+            <a href="#" class="proj-link">View →</a>
           </div>
         </div>
       </div>
+
     </div>
   </div>
 </section>
+
 <!-- CONTACT -->
 <section id="contact">
-  <div class="section-inner">
-    <div>
-      <div class="section-label">// contact</div>
-      <h2 class="section-title">Let's <span style="color:var(--cyan)">Build</span><br/>Together</h2>
-      <p class="section-desc">Have a bot idea, a project in mind, or just want to connect? Send a message.</p>
-      <div class="contact-links">
-        <a href="mailto:apr@example.com" class="contact-link">
-          <span class="contact-link-icon">✉️</span>
-          <div class="contact-link-info"><h4>Email</h4><p>apr@example.com</p></div>
+  <div class="s-inner">
+    <div class="reveal">
+      <div class="s-label">// contact</div>
+      <h2 class="s-title">Let's <span style="color:var(--cyan)">Build</span><br/>Together</h2>
+      <p class="s-desc">Have a bot idea or project in mind? Let's talk about it.</p>
+      <div class="contact-links-list" style="margin-top:2rem;">
+        <a href="mailto:apr@example.com" class="c-link">
+          <span class="c-link-icon">✉️</span>
+          <div class="c-link-info"><h4>Email</h4><p>apr@example.com</p></div>
         </a>
-        <a href="#" class="contact-link">
-          <span class="contact-link-icon">🐙</span>
-          <div class="contact-link-info"><h4>GitHub</h4><p>github.com/apr</p></div>
+        <a href="#" class="c-link">
+          <span class="c-link-icon">🐙</span>
+          <div class="c-link-info"><h4>GitHub</h4><p>github.com/apr</p></div>
         </a>
-        <a href="#" class="contact-link">
-          <span class="contact-link-icon">💼</span>
-          <div class="contact-link-info"><h4>LinkedIn</h4><p>linkedin.com/in/apr</p></div>
+        <a href="#" class="c-link">
+          <span class="c-link-icon">✈️</span>
+          <div class="c-link-info"><h4>Telegram</h4><p>t.me/apr</p></div>
         </a>
       </div>
     </div>
-    <div class="contact-right">
+    <div class="contact-right reveal">
       <div class="contact-form">
         <div class="form-group">
           <label class="form-label">Your Name</label>
@@ -766,28 +578,34 @@ footer span { color: var(--cyan); }
     </div>
   </div>
 </section>
+
 <!-- FOOTER -->
 <footer>
-  Built by <span>APR</span> · Deployed on Vercel · <span>2026</span>
+  Built by <span>APR</span> · Trading Bot &amp; Software Developer · <span>2026</span>
 </footer>
+
 <script>
-function toggleTheme() {
-  const html = document.documentElement;
-  const isDark = html.getAttribute('data-theme') === 'dark';
-  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
-  document.getElementById('themeBtn').textContent = isDark ? '🌙' : '☀️';
+// Theme toggle
+function setTheme(t){
+  document.documentElement.setAttribute('data-theme',t);
+  document.getElementById('darkBtn').classList.toggle('active',t==='dark');
+  document.getElementById('lightBtn').classList.toggle('active',t==='light');
 }
-// Skill bars on scroll
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.querySelectorAll('.skill-bar-fill').forEach(bar => {
-        bar.style.width = bar.dataset.w + '%';
-      });
-    }
+
+// Reveal on scroll
+const revealObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});
+},{threshold:0.08});
+document.querySelectorAll('.reveal').forEach(el=>revealObs.observe(el));
+
+// Skill bars
+const skillObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting)
+      e.target.querySelectorAll('.sk-bar-fill').forEach(b=>{b.style.width=b.dataset.w+'%';});
   });
-}, { threshold: 0.2 });
-document.querySelectorAll('.skill-card').forEach(c => observer.observe(c));
+},{threshold:0.2});
+document.querySelectorAll('.skill-card').forEach(c=>skillObs.observe(c));
 </script>
 </body>
 </html>
